@@ -71,7 +71,7 @@ function Header() {
               <>
                 <div className="balance-badge">
                   <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <img src="https://i.postimg.cc/mD8T19Yf/uc-coin.png" alt="UC" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
+                    <img src="https://www.freeiconspng.com/uploads/gold-coin-png-10.png" alt="UC" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
                     {user.balanceUC.toLocaleString()}
                   </span>
                 </div>
