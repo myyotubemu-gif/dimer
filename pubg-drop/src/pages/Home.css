@@ -114,45 +114,63 @@
 }
 
 @media (max-width: 768px) {
+  .home-page {
+    gap: 2rem;
+  }
+
   .hero {
-    padding: 2rem 0;
+    padding: 3rem 0 1rem;
+    text-align: center;
   }
 
   .hero h1 {
-    font-size: 2rem;
+    font-size: 2.25rem;
+    line-height: 1.2;
   }
   
   .hero p {
-    font-size: 0.9rem;
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+
+  .cases-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
   }
 
   .cases-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
   }
 
   .case-card {
-    padding: 1rem 0.5rem;
+    padding: 1.5rem 1rem;
   }
 
   .case-image-wrap {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 0.5rem;
+    width: 100px;
+    height: 100px;
+    margin-bottom: 1rem;
   }
 
   .case-info h3 {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
 
   .case-price {
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 480px) {
   .cases-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
+    grid-template-columns: 1fr;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .hero h1 {
+    font-size: 1.8rem;
   }
 }

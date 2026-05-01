@@ -163,9 +163,55 @@
 @media (max-width: 1024px) {
   .news-promo-grid {
     grid-template-columns: 1fr;
+    gap: 2rem;
   }
   
   .promo-activation-card {
     position: static;
+    order: -1; /* Promo section comes first on mobile */
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+  }
+
+  .telegram-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .telegram-card .card-icon {
+    padding: 1rem;
+  }
+
+  .telegram-card h3 {
+    font-size: 1.4rem;
+  }
+
+  .news-card {
+    padding: 1.5rem;
+  }
+
+  .news-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .promo-activation-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .promo-form input {
+    font-size: 1.1rem;
+    padding: 1rem;
   }
 }
