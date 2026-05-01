@@ -12,6 +12,7 @@ function AdminPanel() {
   const [newsForm, setNewsForm] = useState({ title: '', content: '' });
   const [promoForm, setPromoForm] = useState({ code: '', rewardUC: 0, maxUses: 1 });
   const [telegramLink, setTelegramLink] = useState('');
+  const [promoList, setPromoList] = useState([]);
 
   // Safety check: if not admin, redirect
   if (!user || user.role !== 'admin') {
@@ -22,7 +23,19 @@ function AdminPanel() {
     fetch(`${import.meta.env.VITE_API_URL}/settings`)
       .then(res => res.json())
       .then(data => setTelegramLink(data.telegramLink));
+    
+    fetchPromos();
   }, []);
+
+  const fetchPromos = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/promocodes`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const data = await res.json();
+      setPromoList(data);
+    } catch (err) {}
+  };
 
   const handleUpdateSettings = async (e) => {
     e.preventDefault();
@@ -77,6 +90,10 @@ function AdminPanel() {
       if (res.ok) {
         showToast('Promokod yaratildi', 'success');
         setPromoForm({ code: '', rewardUC: 0, maxUses: 1 });
+        fetchPromos();
+      } else {
+        const data = await res.json();
+        showToast(data.error || 'Xatolik yuz berdi', 'error');
       }
     } catch (err) {
       showToast('Xatolik', 'error');
@@ -164,6 +181,32 @@ function AdminPanel() {
             />
             <button className="btn btn-primary"><Plus size={18} /> Yaratish</button>
           </form>
+
+          <div style={{ marginTop: '2rem' }}>
+            <h3 style={{ marginBottom: '1rem' }}>Mavjud Promokodlar</h3>
+            <div className="promo-list-scroll">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Kod</th>
+                    <th>UC</th>
+                    <th>Limit</th>
+                    <th>Ishlatildi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {promoList.map(p => (
+                    <tr key={p.id}>
+                      <td>{p.code}</td>
+                      <td>{p.rewardUC}</td>
+                      <td>{p.maxUses}</td>
+                      <td>{p.usedCount}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </section>
       </div>
     </div>

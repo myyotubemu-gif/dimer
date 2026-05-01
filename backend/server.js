@@ -238,10 +238,25 @@ app.post('/api/promocode/activate', authMiddleware, async (req, res) => {
   }
 });
 
+app.get('/api/admin/promocodes', authMiddleware, adminMiddleware, async (req, res) => {
+  const promos = await prisma.promoCode.findMany({ orderBy: { createdAt: 'desc' } });
+  res.json(promos);
+});
+
 app.post('/api/admin/promocode', authMiddleware, adminMiddleware, async (req, res) => {
   const { code, rewardUC, maxUses } = req.body;
-  const promo = await prisma.promoCode.create({ data: { code, rewardUC, maxUses: parseInt(maxUses) } });
-  res.json(promo);
+  try {
+    const promo = await prisma.promoCode.create({ 
+      data: { 
+        code, 
+        rewardUC: parseInt(rewardUC), 
+        maxUses: parseInt(maxUses) 
+      } 
+    });
+    res.json(promo);
+  } catch (err) {
+    res.status(500).json({ error: 'Bu kod allaqachon mavjud yoki xatolik' });
+  }
 });
 
 // --- SETTINGS ROUTES ---
