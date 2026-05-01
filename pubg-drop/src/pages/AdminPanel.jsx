@@ -158,28 +158,37 @@ function AdminPanel() {
             <h2>Promokod Yaratish</h2>
           </div>
           <form onSubmit={handleAddPromo} className="admin-form">
-            <input 
-              type="text" 
-              placeholder="Kod (masalan: NEWYEAR)" 
-              value={promoForm.code}
-              onChange={e => setPromoForm({...promoForm, code: e.target.value})}
-              required 
-            />
-            <input 
-              type="number" 
-              placeholder="Mukofot UC" 
-              value={promoForm.rewardUC}
-              onChange={e => setPromoForm({...promoForm, rewardUC: e.target.value})}
-              required 
-            />
-            <input 
-              type="number" 
-              placeholder="Ishlatish soni" 
-              value={promoForm.maxUses}
-              onChange={e => setPromoForm({...promoForm, maxUses: e.target.value})}
-              required 
-            />
-            <button className="btn btn-primary"><Plus size={18} /> Yaratish</button>
+            <div className="input-group">
+              <label>Promokod nomi</label>
+              <input 
+                type="text" 
+                placeholder="Masalan: DEMER2024" 
+                value={promoForm.code}
+                onChange={e => setPromoForm({...promoForm, code: e.target.value})}
+                required 
+              />
+            </div>
+            <div className="input-group">
+              <label>UC miqdori (Yutuq)</label>
+              <input 
+                type="number" 
+                placeholder="Masalan: 500" 
+                value={promoForm.rewardUC}
+                onChange={e => setPromoForm({...promoForm, rewardUC: e.target.value})}
+                required 
+              />
+            </div>
+            <div className="input-group">
+              <label>Limit (Necha kishi ishlata oladi)</label>
+              <input 
+                type="number" 
+                placeholder="Masalan: 50" 
+                value={promoForm.maxUses}
+                onChange={e => setPromoForm({...promoForm, maxUses: e.target.value})}
+                required 
+              />
+            </div>
+            <button className="btn btn-primary" style={{ marginTop: '1rem' }}><Plus size={18} /> YARATISH</button>
           </form>
 
           <div style={{ marginTop: '2rem' }}>
