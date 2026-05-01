@@ -70,11 +70,21 @@ app.post('/api/auth/login', async (req, res) => {
         data: {
           telegramId: provider === 'telegram' ? accountId : null,
           googleId: provider === 'google' ? accountId : null,
+          email: provider === 'google' ? accountId : null, // If google provides email
           name: name || 'Player',
           avatar: avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
-          balanceUC: 100 // Starting bonus
+          balanceUC: 1000, // Giving 1000 UC to new users for testing
+          role: (name?.includes('myyotubemu') || accountId === 'myyotubemu@gmail.com' || (provider === 'google' && accountId.includes('myyotubemu'))) ? 'admin' : 'user'
         }
       });
+    } else {
+      // Force admin role if email matches during login
+      if (user.email === 'myyotubemu@gmail.com' || user.googleId === 'myyotubemu@gmail.com') {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { role: 'admin' }
+        });
+      }
     }
 
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'supersecret', { expiresIn: '7d' });
