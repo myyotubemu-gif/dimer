@@ -8,7 +8,12 @@ const app = express();
 const prisma = new PrismaClient();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+app.use(cors({
+  origin: ['https://monumental-rabanadas-5f039f.netlify.app', 'http://localhost:5173'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 app.use(express.json());
 
 const bcrypt = require('bcryptjs');
@@ -190,6 +195,6 @@ app.post('/api/inventory/sell/:id', authMiddleware, async (req, res) => {
 });
 
 // --- START SERVER ---
-app.listen(PORT, () => {
-  console.log(`🚀 Backend running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Backend running on port ${PORT}`);
 });
