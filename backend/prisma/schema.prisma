@@ -82,3 +82,8 @@ model Transaction {
   provider  String // click, payme
   createdAt DateTime @default(now())
 }
+
+model Settings {
+  id           String @id @default("global")
+  telegramLink String @default("https://t.me/yourchannel")
+}
