@@ -1,0 +1,166 @@
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid var(--primary);
+  background: var(--bg-card);
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.profile-info h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.user-id {
+  color: var(--text-muted);
+}
+
+.profile-stats {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.stat-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  background: rgba(0,0,0,0.3);
+  padding: 1rem 1.5rem;
+  border-radius: 1rem;
+}
+
+.stat-box span {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.stat-box strong {
+  font-size: 1.25rem;
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+.inventory-section h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1.5rem;
+}
+
+.inventory-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 1rem;
+  text-align: center;
+  gap: 1rem;
+}
+
+.inventory-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.inventory-item.tier-mythic { border-bottom: 3px solid var(--tier-mythic); box-shadow: 0 10px 20px -10px var(--tier-mythic); }
+.inventory-item.tier-legendary { border-bottom: 3px solid var(--tier-legendary); }
+.inventory-item.tier-epic { border-bottom: 3px solid var(--tier-epic); }
+.inventory-item.tier-rare { border-bottom: 3px solid var(--tier-rare); }
+.inventory-item.tier-common { border-bottom: 3px solid var(--tier-common); }
+
+.btn-sell-small {
+  margin-top: 5px;
+  padding: 5px 10px;
+  font-size: 0.75rem;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+  }
+
+  .profile-stats {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .stat-box {
+    align-items: center;
+    flex: 1;
+    padding: 0.75rem;
+  }
+
+  .inventory-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1rem;
+  }
+
+  .inventory-item img {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-info h2 {
+    font-size: 1.5rem;
+  }
+
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .stat-box {
+    padding: 0.5rem;
+  }
+
+  .stat-box strong {
+    font-size: 1rem;
+  }
+
+  .inventory-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .inventory-item {
+    padding: 0.75rem;
+  }
+
+  .inventory-item span {
+    font-size: 0.8rem;
+    height: 2.4em;
+    overflow: hidden;
+  }
+}

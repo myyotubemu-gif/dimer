@@ -1,0 +1,124 @@
+.topup-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.topup-page h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.topup-container {
+  padding: 2.5rem;
+  border-radius: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.amount-selection h3, .payment-methods h3 {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  color: var(--text-muted);
+}
+
+.amount-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.custom-amount {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.glass-input {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--glass-border);
+  color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  font-size: 1.25rem;
+  width: 100%;
+  max-width: 300px;
+  outline: none;
+  font-family: inherit;
+}
+
+.glass-input:focus {
+  border-color: var(--primary);
+}
+
+.methods-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.method-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+  color: var(--text-main);
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.method-btn:hover {
+  border-color: var(--primary);
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-3px);
+}
+
+.method-btn img {
+  height: 40px;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .topup-container {
+    padding: 1.5rem;
+    gap: 2rem;
+  }
+
+  .amount-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+
+  .methods-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .method-btn {
+    padding: 1.5rem;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 1.5rem;
+  }
+
+  .method-btn img {
+    height: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .amount-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .custom-amount {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}

@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id           String        @id @default(uuid())
+  telegramId   String?       @unique
+  googleId     String?       @unique
+  email        String?       @unique
+  password     String?
+  name         String
+  avatar       String?
+  balanceUC    Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
+  inventory    Inventory[]
+}
+
+model Case {
+  id          String   @id @default(uuid())
+  name        String
+  priceUC     Int
+  image       String
+  type        String // mythic, legendary, epic, rare
+  items       Item[] // The possible items in this case
+  isAvailable Boolean  @default(true)
+}
+
+model Item {
+  id          String      @id @default(uuid())
+  name        String
+  image       String
+  type        String // mythic, legendary, epic, rare
+  chance      Float // probability to drop (0.0 to 100.0)
+  sellPriceUC Int         @default(0) // The price the user gets for selling this item
+  caseId      String
+  case        Case        @relation(fields: [caseId], references: [id])
+  inventories Inventory[]
+}
+
+model Inventory {
+  id     String   @id @default(uuid())
+  userId String
+  user   User     @relation(fields: [userId], references: [id])
+  itemId String
+  item   Item     @relation(fields: [itemId], references: [id])
+  date   DateTime @default(now())
+}
+
+model Transaction {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  amountUZS Int
+  amountUC  Int
+  status    String // PENDING, SUCCESS, FAILED
+  provider  String // click, payme
+  createdAt DateTime @default(now())
+}
