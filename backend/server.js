@@ -234,6 +234,25 @@ app.post('/api/admin/promocode', authMiddleware, adminMiddleware, async (req, re
   res.json(promo);
 });
 
+// --- SETTINGS ROUTES ---
+app.get('/api/settings', async (req, res) => {
+  let settings = await prisma.settings.findUnique({ where: { id: 'global' } });
+  if (!settings) {
+    settings = await prisma.settings.create({ data: { id: 'global', telegramLink: 'https://t.me/bulldrop_uz' } });
+  }
+  res.json(settings);
+});
+
+app.post('/api/admin/settings', authMiddleware, adminMiddleware, async (req, res) => {
+  const { telegramLink } = req.body;
+  const settings = await prisma.settings.upsert({
+    where: { id: 'global' },
+    update: { telegramLink },
+    create: { id: 'global', telegramLink }
+  });
+  res.json(settings);
+});
+
 // --- START SERVER ---
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Backend running on port ${PORT}`);

@@ -1,0 +1,171 @@
+.news-promo-page {
+  padding: 2rem 0;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.page-header h1 {
+  font-size: 3rem;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.news-promo-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 3rem;
+}
+
+/* Telegram Card */
+.telegram-card {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 2.5rem;
+  border-radius: 2rem;
+  background: linear-gradient(135deg, rgba(0, 136, 204, 0.2), rgba(0, 0, 0, 0.4));
+  margin-bottom: 3rem;
+  border: 1px solid rgba(0, 136, 204, 0.3);
+}
+
+.telegram-card .card-icon {
+  background: #0088cc;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 0 30px rgba(0, 136, 204, 0.4);
+}
+
+.telegram-card h3 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+/* News Section */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  color: var(--primary);
+}
+
+.news-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.news-card {
+  padding: 2rem;
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  transition: transform 0.3s ease;
+}
+
+.news-card:hover {
+  transform: translateX(10px);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.news-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.news-card h3 {
+  color: var(--primary);
+}
+
+.news-card .date {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Promo Activation Card */
+.promo-activation-card {
+  padding: 3rem;
+  border-radius: 2rem;
+  text-align: center;
+  position: sticky;
+  top: 100px;
+}
+
+.promo-activation-card h2 {
+  margin: 1.5rem 0 1rem;
+}
+
+.promo-activation-card p {
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+.promo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.promo-form input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  padding: 1.25rem;
+  border-radius: 1rem;
+  color: white;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  outline: none;
+}
+
+.promo-form input:focus {
+  border-color: var(--primary);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.promo-tips {
+  text-align: left;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.promo-tips h4 {
+  margin-bottom: 1rem;
+  color: var(--text-main);
+}
+
+.promo-tips ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.promo-tips li {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.promo-tips li::before {
+  content: "✓";
+  color: var(--primary);
+}
+
+@media (max-width: 1024px) {
+  .news-promo-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .promo-activation-card {
+    position: static;
+  }
+}

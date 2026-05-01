@@ -2,22 +2,46 @@ import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { ToastContext } from '../context/ToastContext';
 import { Navigate } from 'react-router-dom';
-import { Plus, Trash2, Gift, Newspaper } from 'lucide-react';
+import { Plus, Trash2, Gift, Newspaper, Send } from 'lucide-react';
 import './AdminPanel.css';
 
 function AdminPanel() {
   const { user } = useContext(AuthContext);
   const { showToast } = useContext(ToastContext);
-  const [news, setNews] = useState([]);
-  const [promos, setPromos] = useState([]);
   
   const [newsForm, setNewsForm] = useState({ title: '', content: '' });
   const [promoForm, setPromoForm] = useState({ code: '', rewardUC: 0, maxUses: 1 });
+  const [telegramLink, setTelegramLink] = useState('');
 
   // Safety check: if not admin, redirect
   if (!user || user.role !== 'admin') {
     return <Navigate to="/" />;
   }
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL}/settings`)
+      .then(res => res.json())
+      .then(data => setTelegramLink(data.telegramLink));
+  }, []);
+
+  const handleUpdateSettings = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/settings`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ telegramLink })
+      });
+      if (res.ok) {
+        showToast('Sozlamalar saqlandi', 'success');
+      }
+    } catch (err) {
+      showToast('Xatolik', 'error');
+    }
+  };
 
   const handleAddNews = async (e) => {
     e.preventDefault();
@@ -67,6 +91,25 @@ function AdminPanel() {
       </header>
 
       <div className="admin-grid">
+        {/* Settings Section */}
+        <section className="admin-section glass" style={{ gridColumn: '1 / -1' }}>
+          <div className="section-header">
+            <Send className="text-primary" />
+            <h2>Tizim Sozlamalari</h2>
+          </div>
+          <form onSubmit={handleUpdateSettings} className="admin-form" style={{ flexDirection: 'row', gap: '1rem' }}>
+            <input 
+              type="text" 
+              placeholder="Telegram kanal havolasi" 
+              value={telegramLink}
+              onChange={e => setTelegramLink(e.target.value)}
+              style={{ flex: 1 }}
+              required 
+            />
+            <button className="btn btn-primary">Saqlash</button>
+          </form>
+        </section>
+
         {/* News Section */}
         <section className="admin-section glass">
           <div className="section-header">

@@ -8,6 +8,7 @@ import CaseOpening from './pages/CaseOpening';
 import TopUp from './pages/TopUp';
 import Profile from './pages/Profile';
 import AdminPanel from './pages/AdminPanel';
+import NewsAndPromo from './pages/NewsAndPromo';
 import './index.css';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
               <Route path="/case/:id" element={<CaseOpening />} />
               <Route path="/topup" element={<TopUp />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/news-promo" element={<NewsAndPromo />} />
               <Route path="/admin-secret" element={<AdminPanel />} />
             </Routes>
           </main>

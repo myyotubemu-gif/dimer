@@ -112,12 +112,15 @@
 
 .user-dropdown {
   position: absolute;
-  top: calc(100% + 1rem);
+  top: calc(100% + 10px);
   right: 0;
-  width: 260px;
-  padding: 1rem 0;
+  width: 240px;
+  background: #000; /* Solid black */
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  padding: 0.5rem;
   z-index: 100;
-  transform-origin: top right;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
 }
 
 .dropdown-user-info {
