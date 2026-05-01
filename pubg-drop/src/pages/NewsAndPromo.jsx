@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Gift, Newspaper, Send, ExternalLink } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { ToastContext } from '../context/ToastContext';
+import { activatePromo, getNews, getSettings } from '../api';
 import './NewsAndPromo.css';
 
 function NewsAndPromo() {
@@ -12,16 +13,19 @@ function NewsAndPromo() {
   const { showToast } = useContext(ToastContext);
 
   useEffect(() => {
-    // Fetch news
-    fetch(`${import.meta.env.VITE_API_URL}/news`)
-      .then(res => res.json())
-      .then(data => setNews(data));
-
-    // Fetch settings (telegram link)
-    fetch(`${import.meta.env.VITE_API_URL}/settings`)
-      .then(res => res.json())
-      .then(data => setSettings(data));
+    loadData();
   }, []);
+
+  const loadData = async () => {
+    try {
+      const newsData = await getNews();
+      setNews(newsData);
+      const settingsData = await getSettings();
+      setSettings(settingsData);
+    } catch (err) {
+      console.error('Data load error:', err);
+    }
+  };
 
   const handleActivatePromo = async (e) => {
     e.preventDefault();
@@ -30,24 +34,18 @@ function NewsAndPromo() {
       return;
     }
     try {
-      const apiUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, '') || 'http://localhost:5000/api';
-      const res = await fetch(`${apiUrl}/promocode/activate`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ code: promoCode })
-      });
-      const data = await res.json();
+      const token = localStorage.getItem('token');
+      const data = await activatePromo(promoCode, token);
+      
       if (data.success) {
         showToast(`Muvaffaqiyatli! ${data.reward} UC qo'shildi.`, 'success');
         setUser({ ...user, balanceUC: user.balanceUC + data.reward });
         setPromoCode('');
       } else {
-        showToast(data.error, 'error');
+        showToast(data.error || 'Promokod faollashtirilmadi', 'error');
       }
     } catch (err) {
+      console.error('Promo error:', err);
       showToast('Xatolik yuz berdi', 'error');
     }
   };

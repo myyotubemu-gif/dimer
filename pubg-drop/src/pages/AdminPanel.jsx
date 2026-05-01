@@ -3,6 +3,7 @@ import { AuthContext } from '../context/AuthContext';
 import { ToastContext } from '../context/ToastContext';
 import { Navigate } from 'react-router-dom';
 import { Plus, Trash2, Gift, Newspaper, Send } from 'lucide-react';
+import { getAdminPromos, createAdminPromo, createAdminNews, updateSettings, getSettings } from '../api';
 import './AdminPanel.css';
 
 function AdminPanel() {
@@ -20,37 +21,28 @@ function AdminPanel() {
   }
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/settings`)
-      .then(res => res.json())
-      .then(data => setTelegramLink(data.telegramLink));
-    
-    fetchPromos();
+    loadAdminData();
   }, []);
 
-  const fetchPromos = async () => {
+  const loadAdminData = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/promocodes`, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      const data = await res.json();
-      setPromoList(data);
-    } catch (err) {}
+      const token = localStorage.getItem('token');
+      const settingsData = await getSettings();
+      setTelegramLink(settingsData.telegramLink);
+      
+      const promosData = await getAdminPromos(token);
+      setPromoList(promosData);
+    } catch (err) {
+      console.error('Admin data load error:', err);
+    }
   };
 
   const handleUpdateSettings = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/settings`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ telegramLink })
-      });
-      if (res.ok) {
-        showToast('Sozlamalar saqlandi', 'success');
-      }
+      const token = localStorage.getItem('token');
+      const res = await updateSettings({ telegramLink }, token);
+      showToast('Sozlamalar saqlandi', 'success');
     } catch (err) {
       showToast('Xatolik', 'error');
     }
@@ -59,18 +51,10 @@ function AdminPanel() {
   const handleAddNews = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/news`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(newsForm)
-      });
-      if (res.ok) {
-        showToast('Yangilik qo\'shildi', 'success');
-        setNewsForm({ title: '', content: '' });
-      }
+      const token = localStorage.getItem('token');
+      await createAdminNews(newsForm, token);
+      showToast('Yangilik qo\'shildi', 'success');
+      setNewsForm({ title: '', content: '' });
     } catch (err) {
       showToast('Xatolik', 'error');
     }
@@ -79,21 +63,14 @@ function AdminPanel() {
   const handleAddPromo = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/promocode`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(promoForm)
-      });
-      if (res.ok) {
+      const token = localStorage.getItem('token');
+      const data = await createAdminPromo(promoForm, token);
+      if (data.error) {
+        showToast(data.error, 'error');
+      } else {
         showToast('Promokod yaratildi', 'success');
         setPromoForm({ code: '', rewardUC: 0, maxUses: 1 });
-        fetchPromos();
-      } else {
-        const data = await res.json();
-        showToast(data.error || 'Xatolik yuz berdi', 'error');
+        loadAdminData();
       }
     } catch (err) {
       showToast('Xatolik', 'error');
@@ -134,20 +111,26 @@ function AdminPanel() {
             <h2>Yangilik Qo'shish</h2>
           </div>
           <form onSubmit={handleAddNews} className="admin-form">
-            <input 
-              type="text" 
-              placeholder="Sarlavha" 
-              value={newsForm.title}
-              onChange={e => setNewsForm({...newsForm, title: e.target.value})}
-              required 
-            />
-            <textarea 
-              placeholder="Yangilik matni" 
-              value={newsForm.content}
-              onChange={e => setNewsForm({...newsForm, content: e.target.value})}
-              required
-            ></textarea>
-            <button className="btn btn-primary"><Plus size={18} /> Qo'shish</button>
+            <div className="input-group">
+              <label>Sarlavha</label>
+              <input 
+                type="text" 
+                placeholder="Yangilik sarlavhasi" 
+                value={newsForm.title}
+                onChange={e => setNewsForm({...newsForm, title: e.target.value})}
+                required 
+              />
+            </div>
+            <div className="input-group">
+              <label>Matn</label>
+              <textarea 
+                placeholder="Yangilik matni" 
+                value={newsForm.content}
+                onChange={e => setNewsForm({...newsForm, content: e.target.value})}
+                required
+              ></textarea>
+            </div>
+            <button className="btn btn-primary" style={{ marginTop: '1rem' }}><Plus size={18} /> Qo'shish</button>
           </form>
         </section>
 
