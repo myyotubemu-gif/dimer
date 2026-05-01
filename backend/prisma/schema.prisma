@@ -16,10 +16,29 @@ model User {
   name         String
   avatar       String?
   balanceUC    Int           @default(0)
+  role         String        @default("user") // "user" or "admin"
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   transactions Transaction[]
   inventory    Inventory[]
+}
+
+model News {
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  image     String?
+  createdAt DateTime @default(now())
+}
+
+model PromoCode {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  rewardUC  Int
+  maxUses   Int      @default(1)
+  usedCount Int      @default(0)
+  expiresAt DateTime?
+  createdAt DateTime @default(now())
 }
 
 model Case {
