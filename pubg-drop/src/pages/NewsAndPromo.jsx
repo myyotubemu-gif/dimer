@@ -30,7 +30,8 @@ function NewsAndPromo() {
       return;
     }
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/promocode/activate`, {
+      const apiUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, '') || 'http://localhost:5000/api';
+      const res = await fetch(`${apiUrl}/promocode/activate`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
