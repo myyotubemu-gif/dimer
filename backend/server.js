@@ -189,6 +189,51 @@ app.post('/api/inventory/sell/:id', authMiddleware, async (req, res) => {
   }
 });
 
+// --- ADMIN MIDDLEWARE ---
+const adminMiddleware = async (req, res, next) => {
+  const user = await prisma.user.findUnique({ where: { id: req.userId } });
+  if (user?.role !== 'admin') return res.status(403).json({ error: 'Faqat adminlar uchun' });
+  next();
+};
+
+// --- NEWS ROUTES ---
+app.get('/api/news', async (req, res) => {
+  const news = await prisma.news.findMany({ orderBy: { createdAt: 'desc' } });
+  res.json(news);
+});
+
+app.post('/api/admin/news', authMiddleware, adminMiddleware, async (req, res) => {
+  const { title, content, image } = req.body;
+  const news = await prisma.news.create({ data: { title, content, image } });
+  res.json(news);
+});
+
+// --- PROMOCODE ROUTES ---
+app.post('/api/promocode/activate', authMiddleware, async (req, res) => {
+  const { code } = req.body;
+  try {
+    const promo = await prisma.promoCode.findUnique({ where: { code } });
+    if (!promo) return res.status(400).json({ error: 'Promokod xato' });
+    if (promo.usedCount >= promo.maxUses) return res.status(400).json({ error: 'Promokod muddati tugagan' });
+
+    // Update user balance and promo used count
+    await prisma.$transaction([
+      prisma.user.update({ where: { id: req.userId }, data: { balanceUC: { increment: promo.rewardUC } } }),
+      prisma.promoCode.update({ where: { id: promo.id }, data: { usedCount: { increment: 1 } } })
+    ]);
+
+    res.json({ success: true, reward: promo.rewardUC });
+  } catch (error) {
+    res.status(500).json({ error: 'Server xatosi' });
+  }
+});
+
+app.post('/api/admin/promocode', authMiddleware, adminMiddleware, async (req, res) => {
+  const { code, rewardUC, maxUses } = req.body;
+  const promo = await prisma.promoCode.create({ data: { code, rewardUC, maxUses: parseInt(maxUses) } });
+  res.json(promo);
+});
+
 // --- START SERVER ---
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Backend running on port ${PORT}`);
