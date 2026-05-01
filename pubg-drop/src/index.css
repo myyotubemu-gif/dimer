@@ -249,3 +249,9 @@ button {
     font-size: 14px;
   }
 }
+@media (max-width: 768px) {
+  .main-content {
+    padding-bottom: 90px !important;
+  }
+}
+

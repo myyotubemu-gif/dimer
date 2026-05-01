@@ -9,6 +9,7 @@ import TopUp from './pages/TopUp';
 import Profile from './pages/Profile';
 import AdminPanel from './pages/AdminPanel';
 import NewsAndPromo from './pages/NewsAndPromo';
+import MobileNav from './components/MobileNav';
 import './index.css';
 
 function App() {
@@ -17,7 +18,7 @@ function App() {
       <AuthProvider>
         <Router>
           <Header />
-          <main className="container" style={{ flex: 1, padding: '2rem 1.5rem' }}>
+          <main className="container main-content" style={{ flex: 1, padding: '2rem 1.5rem' }}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/case/:id" element={<CaseOpening />} />
@@ -27,6 +28,7 @@ function App() {
               <Route path="/admin-secret" element={<AdminPanel />} />
             </Routes>
           </main>
+          <MobileNav />
         </Router>
       </AuthProvider>
     </ToastProvider>
