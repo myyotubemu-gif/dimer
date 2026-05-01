@@ -261,9 +261,12 @@ app.post('/api/admin/promocode', authMiddleware, adminMiddleware, async (req, re
 
 // --- SETTINGS ROUTES ---
 app.get('/api/settings', async (req, res) => {
-  let settings = await prisma.settings.findUnique({ where: { id: 'global' } });
+  let settings = await prisma.settings.findFirst();
   if (!settings) {
-    settings = await prisma.settings.create({ data: { id: 'global', telegramLink: 'https://t.me/bulldrop_uz' } });
+    // Create default settings if not exists
+    settings = await prisma.settings.create({
+      data: { telegramLink: 'https://t.me/Dimer_pubg' }
+    });
   }
   res.json(settings);
 });
