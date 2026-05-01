@@ -20,6 +20,8 @@ function Header() {
   const { user, logout } = useContext(AuthContext);
   const { showToast } = useContext(ToastContext);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isPromoModalOpen, setIsPromoModalOpen] = useState(false);
+  const [isNewsModalOpen, setIsNewsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -57,7 +59,8 @@ function Header() {
 
           <nav className={`nav-links ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
             <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>Keyslar</Link>
-            <Link to="/topup" onClick={() => setIsMobileMenuOpen(false)}>Hisob to'ldirish</Link>
+            <button className="nav-link-btn" onClick={() => { setIsNewsModalOpen(true); setIsMobileMenuOpen(false); }}>Yangiliklar</button>
+            <button className="nav-link-btn" onClick={() => { setIsPromoModalOpen(true); setIsMobileMenuOpen(false); }}>Promokodlar</button>
             {!user && (
               <button className="btn btn-primary mobile-only" onClick={() => { setIsAuthModalOpen(true); setIsMobileMenuOpen(false); }}>
                 Tizimga Kirish
@@ -92,18 +95,17 @@ function Header() {
                       <Link to="/profile" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>
                         <UserIcon className="icon" size={18} /> Shaxsiy kabinet
                       </Link>
-                      <button className="dropdown-item" onClick={() => { setIsDropdownOpen(false); showToast('Yordam bo\'limi tez kunda...', 'info'); }}>
-                        <Headphones className="icon" size={18} /> Yordam
+                      <button className="dropdown-item" onClick={() => { setIsDropdownOpen(false); setIsNewsModalOpen(true); }}>
+                        <Headphones className="icon" size={18} /> Yangiliklar
                       </button>
-                      <button className="dropdown-item" onClick={() => { setIsDropdownOpen(false); showToast('Promokod tizimi tez kunda...', 'info'); }}>
+                      <button className="dropdown-item" onClick={() => { setIsDropdownOpen(false); setIsPromoModalOpen(true); }}>
                         <Gift className="icon" size={18} /> Promokod
                       </button>
-                      <Link to="/topup" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>
-                        <CreditCard className="icon" size={18} /> Hisobni to'ldirish
-                      </Link>
-                      <button className="dropdown-item" onClick={() => { setIsDropdownOpen(false); showToast('Chiqarib olish funksiyasi tez kunda...', 'info'); }}>
-                        <ArrowUpRight className="icon" size={18} /> Chiqarib olish
-                      </button>
+                      {user.role === 'admin' && (
+                        <Link to="/admin-secret" className="dropdown-item text-primary" onClick={() => setIsDropdownOpen(false)}>
+                          <ArrowUpRight className="icon" size={18} /> Admin Panel
+                        </Link>
+                      )}
                       <div className="dropdown-divider"></div>
                       <button className="dropdown-item text-error" onClick={handleLogout}>
                         <LogOut className="icon" size={18} /> Chiqish
@@ -121,7 +123,106 @@ function Header() {
         </div>
       </header>
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      <PromoModal isOpen={isPromoModalOpen} onClose={() => setIsPromoModalOpen(false)} />
+      <NewsModal isOpen={isNewsModalOpen} onClose={() => setIsNewsModalOpen(false)} />
     </>
+  );
+}
+
+// Quick Inline Modals for now (will move to separate files if they grow)
+function PromoModal({ isOpen, onClose }) {
+  const [code, setCode] = useState('');
+  const { showToast } = useContext(ToastContext);
+  const { user, setUser } = useContext(AuthContext);
+
+  if (!isOpen) return null;
+
+  const handleActivate = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/promocode/activate`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ code })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Muvaffaqiyatli! ${data.reward} UC qo'shildi.`, 'success');
+        setUser({ ...user, balanceUC: user.balanceUC + data.reward });
+        onClose();
+      } else {
+        showToast(data.error, 'error');
+      }
+    } catch (err) {
+      showToast('Xatolik yuz berdi', 'error');
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content glass animate-scale-in" onClick={e => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose}><X size={24} /></button>
+        <div className="modal-header">
+          <Gift size={32} className="text-primary" />
+          <h2>Promokod Faollashtirish</h2>
+        </div>
+        <div className="modal-body">
+          <div className="input-group">
+            <label>Kod kiriting</label>
+            <input 
+              type="text" 
+              placeholder="Masalan: START2024" 
+              value={code}
+              onChange={e => setCode(e.target.value)}
+            />
+          </div>
+          <button className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} onClick={handleActivate}>
+            Faollashtirish
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NewsModal({ isOpen, onClose }) {
+  const [news, setNews] = useState([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/news`)
+        .then(res => res.json())
+        .then(data => setNews(data));
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content glass animate-scale-in news-modal" onClick={e => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose}><X size={24} /></button>
+        <div className="modal-header">
+          <ArrowUpRight size={32} className="text-primary" />
+          <h2>Yangiliklar</h2>
+        </div>
+        <div className="modal-body news-list">
+          {news.length === 0 ? (
+            <p className="text-muted">Hozircha yangiliklar yo'q.</p>
+          ) : (
+            news.map(item => (
+              <div key={item.id} className="news-item glass">
+                <h3>{item.title}</h3>
+                <p>{item.content}</p>
+                <span className="news-date">{new Date(item.createdAt).toLocaleDateString()}</span>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 

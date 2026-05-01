@@ -1,0 +1,61 @@
+.admin-panel {
+  padding: 2rem 0;
+}
+
+.admin-header {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.admin-header h1 {
+  font-size: 2.5rem;
+  color: var(--primary);
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.admin-section {
+  padding: 2rem;
+  border-radius: 1.5rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1rem;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.admin-form input, 
+.admin-form textarea {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  color: white;
+  outline: none;
+  font-family: inherit;
+}
+
+.admin-form textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+.admin-form input:focus, 
+.admin-form textarea:focus {
+  border-color: var(--primary);
+  background: rgba(255, 255, 255, 0.1);
+}

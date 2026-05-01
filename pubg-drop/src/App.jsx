@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import CaseOpening from './pages/CaseOpening';
 import TopUp from './pages/TopUp';
 import Profile from './pages/Profile';
+import AdminPanel from './pages/AdminPanel';
 import './index.css';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
               <Route path="/case/:id" element={<CaseOpening />} />
               <Route path="/topup" element={<TopUp />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/admin-secret" element={<AdminPanel />} />
             </Routes>
           </main>
         </Router>
