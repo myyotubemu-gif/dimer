@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { ToastContext } from '../context/ToastContext';
 import { Navigate } from 'react-router-dom';
-import { Plus, Trash2, Gift, Newspaper, Send } from 'lucide-react';
+import { Plus, Trash2, Gift, Newspaper, Send, Users, TrendingUp, Wallet } from 'lucide-react';
 import { getAdminPromos, createAdminPromo, createAdminNews, updateSettings, getSettings } from '../api';
 import './AdminPanel.css';
 
@@ -14,6 +14,7 @@ function AdminPanel() {
   const [promoForm, setPromoForm] = useState({ code: '', rewardUC: 0, maxUses: 1 });
   const [telegramLink, setTelegramLink] = useState('');
   const [promoList, setPromoList] = useState([]);
+  const [stats, setStats] = useState({ totalUsers: 0, totalTransactions: 0, totalRevenue: 0, totalUCSpent: 0 });
 
   // Safety check: if not admin, redirect
   if (!user || user.role !== 'admin') {
@@ -21,8 +22,23 @@ function AdminPanel() {
   }
 
   useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL}/settings`)
+      .then(res => res.json())
+      .then(data => setTelegramLink(data.telegramLink));
+    
     loadAdminData();
+    fetchStats();
   }, []);
+
+  const fetchStats = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/stats`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const data = await res.json();
+      setStats(data);
+    } catch (err) {}
+  };
 
   const loadAdminData = async () => {
     try {
@@ -83,6 +99,37 @@ function AdminPanel() {
         <h1>Admin Panel</h1>
         <p>Tizimni boshqarish bo'limi</p>
       </header>
+
+      <div className="admin-stats-grid">
+        <div className="stat-card glass">
+          <div className="stat-icon users"><Users size={24} /></div>
+          <div className="stat-info">
+            <span>Foydalanuvchilar</span>
+            <strong>{stats.totalUsers}</strong>
+          </div>
+        </div>
+        <div className="stat-card glass">
+          <div className="stat-icon money"><TrendingUp size={24} /></div>
+          <div className="stat-info">
+            <span>Jami Tushum</span>
+            <strong>{stats.totalRevenue.toLocaleString()} UZS</strong>
+          </div>
+        </div>
+        <div className="stat-card glass">
+          <div className="stat-icon transactions"><Wallet size={24} /></div>
+          <div className="stat-info">
+            <span>To'lovlar Soni</span>
+            <strong>{stats.totalTransactions}</strong>
+          </div>
+        </div>
+        <div className="stat-card glass">
+          <div className="stat-icon uc"><Gift size={24} /></div>
+          <div className="stat-info">
+            <span>Berilgan UC</span>
+            <strong>{stats.totalUCSpent.toLocaleString()} UC</strong>
+          </div>
+        </div>
+      </div>
 
       <div className="admin-grid">
         {/* Settings Section */}

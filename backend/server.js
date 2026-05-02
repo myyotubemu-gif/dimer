@@ -260,6 +260,42 @@ app.post('/api/admin/promocode', authMiddleware, adminMiddleware, async (req, re
 });
 
 // --- SETTINGS ROUTES ---
+app.get('/api/admin/stats', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const totalUsers = await prisma.user.count();
+    const totalTransactions = await prisma.transaction.count({ where: { status: 'SUCCESS' } });
+    const totalRevenue = await prisma.transaction.aggregate({
+      where: { status: 'SUCCESS' },
+      _sum: { amountUZS: true }
+    });
+    const totalUCSpent = await prisma.transaction.aggregate({
+      where: { status: 'SUCCESS' },
+      _sum: { amountUC: true }
+    });
+
+    res.json({
+      totalUsers,
+      totalTransactions,
+      totalRevenue: totalRevenue._sum.amountUZS || 0,
+      totalUCSpent: totalUCSpent._sum.amountUC || 0
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Statistikani olishda xatolik' });
+  }
+});
+
+app.get('/api/user/transactions', authMiddleware, async (req, res) => {
+  try {
+    const transactions = await prisma.transaction.findMany({
+      where: { userId: req.userId },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(transactions);
+  } catch (err) {
+    res.status(500).json({ error: 'Tarixni olishda xatolik' });
+  }
+});
+
 app.post('/api/payment/create', authMiddleware, async (req, res) => {
   const { amountUZS, provider } = req.body;
   

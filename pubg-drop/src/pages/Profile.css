@@ -102,32 +102,99 @@
   width: 100%;
 }
 
-@media (max-width: 768px) {
-  .profile-header {
-    flex-direction: column;
-    text-align: center;
-    padding: 1.5rem;
-  }
+.profile-header-actions {
+  margin-top: 1rem;
+}
 
-  .profile-stats {
-    width: 100%;
+.logout-btn {
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  color: #ef4444 !important;
+  font-size: 0.8rem;
+  padding: 0.5rem 1rem;
+}
+
+.profile-stats .stat-box strong img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.profile-content-tabs {
+  display: flex;
+  gap: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 2rem;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 1rem 1.5rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+  color: var(--text-main);
+}
+
+.tab-btn.active {
+  color: var(--primary);
+}
+
+.tab-btn.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--primary);
+  box-shadow: 0 0 10px var(--primary);
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 2rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-badge.success { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.status-badge.pending { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+.status-badge.failed { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  gap: 1rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.transactions-list {
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+  .profile-content-tabs {
     justify-content: center;
   }
-
-  .stat-box {
-    align-items: center;
-    flex: 1;
-    padding: 0.75rem;
-  }
-
-  .inventory-grid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 1rem;
-  }
-
-  .inventory-item img {
-    width: 60px;
-    height: 60px;
+  
+  .tab-btn {
+    padding: 1rem 0.75rem;
+    font-size: 0.9rem;
   }
 }
 
