@@ -260,6 +260,41 @@ app.post('/api/admin/promocode', authMiddleware, adminMiddleware, async (req, re
 });
 
 // --- SETTINGS ROUTES ---
+app.post('/api/payment/create', authMiddleware, async (req, res) => {
+  const { amountUZS, provider } = req.body;
+  
+  try {
+    const ucAmount = Math.floor(amountUZS / 100); // Simple rate: 100 UZS = 1 UC
+    
+    const transaction = await prisma.transaction.create({
+      data: {
+        userId: req.userId,
+        amountUZS: parseInt(amountUZS),
+        amountUC: ucAmount,
+        provider,
+        status: 'PENDING'
+      }
+    });
+
+    let paymentUrl = '';
+    if (provider === 'payme') {
+      const merchantId = process.env.PAYME_MERCHANT_ID || 'your_merchant_id';
+      const amountTiyin = amountUZS * 100;
+      const params = `m=${merchantId};ac.order_id=${transaction.id};a=${amountTiyin}`;
+      const encodedParams = Buffer.from(params).toString('base64');
+      paymentUrl = `https://checkout.paycom.uz/${encodedParams}`;
+    } else if (provider === 'click') {
+      const serviceId = process.env.CLICK_SERVICE_ID || 'your_service_id';
+      const merchantId = process.env.CLICK_MERCHANT_ID || 'your_merchant_id';
+      paymentUrl = `https://my.click.uz/services/pay?service_id=${serviceId}&merchant_id=${merchantId}&amount=${amountUZS}&transaction_param=${transaction.id}`;
+    }
+
+    res.json({ paymentUrl, transactionId: transaction.id });
+  } catch (err) {
+    res.status(500).json({ error: 'To\'lov yaratishda xatolik' });
+  }
+});
+
 app.get('/api/settings', async (req, res) => {
   let settings = await prisma.settings.findFirst();
   if (!settings) {

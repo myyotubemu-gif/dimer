@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { ToastContext } from '../context/ToastContext';
 import './TopUp.css';
 
 function TopUp() {
+  const { user } = useContext(AuthContext);
+  const { showToast } = useContext(ToastContext);
+  
   const ucPackages = [
     { uc: 60, price: 15000 },
     { uc: 325, price: 65000 },
@@ -12,45 +17,100 @@ function TopUp() {
   ];
 
   const [selectedPackage, setSelectedPackage] = useState(ucPackages[0]);
+  const [loading, setLoading] = useState(false);
+
+  const handlePayment = async (provider) => {
+    if (!user) {
+      showToast('Avval tizimga kiring', 'error');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, '') || 'http://localhost:5000/api';
+      const res = await fetch(`${apiUrl}/payment/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          amountUZS: selectedPackage.price,
+          provider
+        })
+      });
+
+      const data = await res.json();
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl; // Redirect to Payme/Click
+      } else {
+        showToast('To\'lov yaratishda xatolik', 'error');
+      }
+    } catch (err) {
+      showToast('Server bilan bog\'lanishda xatolik', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="topup-page animate-fade-in">
-      <h2>Hisobni To'ldirish</h2>
+      <div className="page-header text-center">
+        <h1>Hisobni To'ldirish</h1>
+        <p>UC sotib oling va omadingizni sinab ko'ring</p>
+      </div>
+
       <div className="topup-container glass">
         <div className="amount-selection">
-          <h3>UC Miqdorini tanlang</h3>
-          <div className="amount-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '15px' }}>
+          <h3>UC Paketini Tanlang</h3>
+          <div className="amount-grid">
             {ucPackages.map((pkg, idx) => (
               <button 
                 key={idx} 
-                className={`btn ${selectedPackage.uc === pkg.uc ? 'btn-primary' : 'btn-secondary'}`}
+                className={`package-card ${selectedPackage.uc === pkg.uc ? 'active' : ''}`}
                 onClick={() => setSelectedPackage(pkg)}
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '15px 10px', gap: '8px' }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <img src="https://pubgmobile.uz/images/uc-coin.png" alt="UC" style={{ width: '24px', height: '24px', objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; }} />
-                  <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{pkg.uc}</span>
+                <div className="package-icon">
+                  <img src="https://www.freeiconspng.com/uploads/gold-coin-png-10.png" alt="UC" />
                 </div>
-                <span style={{ fontSize: '0.9rem', opacity: 0.8 }}>{pkg.price.toLocaleString()} UZS</span>
+                <div className="package-info">
+                  <span className="uc-count">{pkg.uc} UC</span>
+                  <span className="uzs-price">{pkg.price.toLocaleString()} UZS</span>
+                </div>
               </button>
             ))}
           </div>
-          <div className="custom-amount" style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.05)', padding: '15px', borderRadius: '10px' }}>
-            <span style={{ fontSize: '1.1rem' }}>To'lov summasi:</span>
-            <span style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#ffcc00' }}>{selectedPackage.price.toLocaleString()} UZS</span>
+        </div>
+
+        <div className="payment-summary">
+          <div className="summary-row">
+            <span>Siz tanladingiz:</span>
+            <strong>{selectedPackage.uc} UC</strong>
+          </div>
+          <div className="summary-row">
+            <span>To'lov summasi:</span>
+            <strong className="text-primary">{selectedPackage.price.toLocaleString()} UZS</strong>
           </div>
         </div>
 
         <div className="payment-methods">
-          <h3>To'lov usulini tanlang</h3>
+          <h3>To'lov Usulini Tanlang</h3>
           <div className="methods-grid">
-            <button className="method-btn glass">
-              <img src="https://click.uz/click/images/click-logo.png" alt="Click" />
-              <span>Click orqali to'lash</span>
-            </button>
-            <button className="method-btn glass">
+            <button 
+              className="method-btn glass payme-btn" 
+              onClick={() => handlePayment('payme')}
+              disabled={loading}
+            >
               <img src="https://cdn.payme.uz/logo/payme_color.svg" alt="Payme" />
-              <span>Payme orqali to'lash</span>
+              <span>Payme</span>
+            </button>
+            <button 
+              className="method-btn glass click-btn" 
+              onClick={() => handlePayment('click')}
+              disabled={loading}
+            >
+              <img src="https://click.uz/click/images/click-logo.png" alt="Click" />
+              <span>Click</span>
             </button>
           </div>
         </div>
