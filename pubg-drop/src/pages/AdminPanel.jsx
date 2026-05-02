@@ -73,12 +73,24 @@ function AdminPanel() {
     }
   };
 
-  const handleUpdateSettings = async (e) => {
+  const handleSaveSettings = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
-      const res = await updateSettings({ telegramLink }, token);
-      showToast('Sozlamalar saqlandi', 'success');
+      const apiUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, '') || 'http://localhost:5000/api';
+      const res = await fetch(`${apiUrl}/settings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(settingsForm)
+      });
+      if (res.ok) {
+        showToast('Sozlamalar saqlandi', 'success');
+        setTelegramLink(settingsForm.telegramLink);
+      } else {
+        showToast('Xatolik yuz berdi', 'error');
+      }
     } catch (err) {
       showToast('Xatolik', 'error');
     }
