@@ -49,7 +49,7 @@ function Header() {
       <header className="header glass">
         <div className="container header-content">
           <Link to="/" className="logo" onClick={() => setIsMobileMenuOpen(false)}>
-            BULL<span>DROP</span>
+            DIMER<span>DROP</span>
           </Link>
 
           <button className="mobile-toggle" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
