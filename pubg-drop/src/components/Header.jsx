@@ -74,6 +74,7 @@ function Header() {
                     <img src="https://www.freeiconspng.com/uploads/gold-coin-png-10.png" alt="UC" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
                     {user.balanceUC.toLocaleString()}
                   </span>
+                  <Link to="/topup" className="btn-add">+</Link>
                 </div>
                 <div className="profile-container" ref={dropdownRef}>
                   <button className="profile-btn" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
