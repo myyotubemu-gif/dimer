@@ -84,24 +84,45 @@ function Header() {
                   {isDropdownOpen && (
                     <div className="user-dropdown animate-fade-in">
                       <div className="dropdown-user-info">
-                        <strong>{user.name}</strong>
-                        <span>ID: {user.id.substring(0, 8)}</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <strong>{user.name.length > 12 ? user.name.substring(0, 12) + '...' : user.name}</strong>
+                          <ChevronDown size={16} opacity={0.5} />
+                        </div>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '4px' }}>
+                          ID: {user.id.substring(0, 8)} 
+                          <button onClick={() => { navigator.clipboard.writeText(user.id); showToast('ID nusxalandi', 'success'); }} style={{ color: 'var(--text-muted)', display: 'flex' }}>
+                            <CreditCard size={12} />
+                          </button>
+                        </span>
                       </div>
                       <div className="dropdown-divider"></div>
+                      
                       <Link to="/profile" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>
-                        <UserIcon className="icon" size={18} /> Shaxsiy kabinet
+                        <UserIcon className="icon" size={20} /> Shaxsiy kabinet
                       </Link>
+                      
+                      <a href="https://t.me/Dimer_pubg" target="_blank" rel="noreferrer" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>
+                        <Headphones className="icon" size={20} /> Yordam
+                      </a>
+                      
                       <Link to="/news-promo" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>
-                        <Newspaper className="icon" size={18} /> Yangiliklar & Promokodlar
+                        <Gift className="icon" size={20} /> Promokod
                       </Link>
+                      
+                      <Link to="/topup" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>
+                        <CreditCard className="icon" size={20} /> Hisobni to'ldirish
+                      </Link>
+
                       {user.role === 'admin' && (
                         <Link to="/admin-secret" className="dropdown-item text-primary" onClick={() => setIsDropdownOpen(false)}>
-                          <ArrowUpRight className="icon" size={18} /> Admin Panel
+                          <ArrowUpRight className="icon" size={20} /> Admin Panel
                         </Link>
                       )}
+                      
                       <div className="dropdown-divider"></div>
+                      
                       <button className="dropdown-item text-error" onClick={handleLogout}>
-                        <LogOut className="icon" size={18} /> Chiqish
+                        <LogOut className="icon" size={20} /> Chiqish
                       </button>
                     </div>
                   )}
