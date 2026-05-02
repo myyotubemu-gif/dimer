@@ -300,7 +300,8 @@ app.post('/api/payment/create', authMiddleware, async (req, res) => {
   const { amountUZS, provider } = req.body;
   
   try {
-    const ucAmount = Math.floor(amountUZS / 100); // Simple rate: 100 UZS = 1 UC
+    const settings = await prisma.settings.findFirst();
+    const ucAmount = Math.floor(amountUZS / 100); 
     
     const transaction = await prisma.transaction.create({
       data: {
@@ -314,14 +315,14 @@ app.post('/api/payment/create', authMiddleware, async (req, res) => {
 
     let paymentUrl = '';
     if (provider === 'payme') {
-      const merchantId = process.env.PAYME_MERCHANT_ID || 'your_merchant_id';
+      const merchantId = settings?.paymeMerchantId || '66184a5...'; // Fallback if empty
       const amountTiyin = amountUZS * 100;
       const params = `m=${merchantId};ac.order_id=${transaction.id};a=${amountTiyin}`;
       const encodedParams = Buffer.from(params).toString('base64');
       paymentUrl = `https://checkout.paycom.uz/${encodedParams}`;
     } else if (provider === 'click') {
-      const serviceId = process.env.CLICK_SERVICE_ID || 'your_service_id';
-      const merchantId = process.env.CLICK_MERCHANT_ID || 'your_merchant_id';
+      const serviceId = settings?.clickServiceId || '32840'; 
+      const merchantId = settings?.clickMerchantId || '24560'; 
       paymentUrl = `https://my.click.uz/services/pay?service_id=${serviceId}&merchant_id=${merchantId}&amount=${amountUZS}&transaction_param=${transaction.id}`;
     }
 
@@ -334,22 +335,27 @@ app.post('/api/payment/create', authMiddleware, async (req, res) => {
 app.get('/api/settings', async (req, res) => {
   let settings = await prisma.settings.findFirst();
   if (!settings) {
-    // Create default settings if not exists
     settings = await prisma.settings.create({
-      data: { telegramLink: 'https://t.me/Dimer_pubg' }
+      data: {
+        telegramLink: 'https://t.me/Dimer_pubg'
+      }
     });
   }
   res.json(settings);
 });
 
-app.post('/api/admin/settings', authMiddleware, adminMiddleware, async (req, res) => {
-  const { telegramLink } = req.body;
-  const settings = await prisma.settings.upsert({
-    where: { id: 'global' },
-    update: { telegramLink },
-    create: { id: 'global', telegramLink }
-  });
-  res.json(settings);
+app.post('/api/settings', authMiddleware, adminMiddleware, async (req, res) => {
+  const { telegramLink, paymeMerchantId, clickServiceId, clickMerchantId } = req.body;
+  try {
+    const settings = await prisma.settings.upsert({
+      where: { id: 'global' },
+      update: { telegramLink, paymeMerchantId, clickServiceId, clickMerchantId },
+      create: { id: 'global', telegramLink, paymeMerchantId, clickServiceId, clickMerchantId }
+    });
+    res.json(settings);
+  } catch (err) {
+    res.status(500).json({ error: 'Sozlamalarni saqlashda xatolik' });
+  }
 });
 
 // --- START SERVER ---

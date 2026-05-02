@@ -84,6 +84,9 @@ model Transaction {
 }
 
 model Settings {
-  id           String @id @default("global")
-  telegramLink String @default("https://t.me/yourchannel")
+  id               String @id @default("global")
+  telegramLink     String @default("https://t.me/yourchannel")
+  paymeMerchantId  String @default("")
+  clickServiceId   String @default("")
+  clickMerchantId  String @default("")
 }

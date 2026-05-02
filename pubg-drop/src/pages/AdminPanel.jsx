@@ -13,6 +13,12 @@ function AdminPanel() {
   const [newsForm, setNewsForm] = useState({ title: '', content: '' });
   const [promoForm, setPromoForm] = useState({ code: '', rewardUC: 0, maxUses: 1 });
   const [telegramLink, setTelegramLink] = useState('');
+  const [settingsForm, setSettingsForm] = useState({ 
+    telegramLink: '', 
+    paymeMerchantId: '', 
+    clickServiceId: '', 
+    clickMerchantId: '' 
+  });
   const [promoList, setPromoList] = useState([]);
   const [stats, setStats] = useState({ totalUsers: 0, totalTransactions: 0, totalRevenue: 0, totalUCSpent: 0 });
 
@@ -24,7 +30,15 @@ function AdminPanel() {
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/settings`)
       .then(res => res.json())
-      .then(data => setTelegramLink(data.telegramLink));
+      .then(data => {
+        setTelegramLink(data.telegramLink);
+        setSettingsForm({
+          telegramLink: data.telegramLink,
+          paymeMerchantId: data.paymeMerchantId || '',
+          clickServiceId: data.clickServiceId || '',
+          clickMerchantId: data.clickMerchantId || ''
+        });
+      });
     
     loadAdminData();
     fetchStats();
@@ -45,6 +59,12 @@ function AdminPanel() {
       const token = localStorage.getItem('token');
       const settingsData = await getSettings();
       setTelegramLink(settingsData.telegramLink);
+      setSettingsForm({
+        telegramLink: settingsData.telegramLink,
+        paymeMerchantId: settingsData.paymeMerchantId || '',
+        clickServiceId: settingsData.clickServiceId || '',
+        clickMerchantId: settingsData.clickMerchantId || ''
+      });
       
       const promosData = await getAdminPromos(token);
       setPromoList(promosData);
@@ -135,19 +155,49 @@ function AdminPanel() {
         {/* Settings Section */}
         <section className="admin-section glass" style={{ gridColumn: '1 / -1' }}>
           <div className="section-header">
-            <Send className="text-primary" />
+            <Send size={20} />
             <h2>Tizim Sozlamalari</h2>
           </div>
-          <form onSubmit={handleUpdateSettings} className="admin-form" style={{ flexDirection: 'row', gap: '1rem' }}>
-            <input 
-              type="text" 
-              placeholder="Telegram kanal havolasi" 
-              value={telegramLink}
-              onChange={e => setTelegramLink(e.target.value)}
-              style={{ flex: 1 }}
-              required 
-            />
-            <button className="btn btn-primary">Saqlash</button>
+          <form onSubmit={handleSaveSettings} className="admin-form">
+            <div className="form-group">
+              <label>Telegram Kanal Havolasi</label>
+              <input 
+                type="url" 
+                value={settingsForm.telegramLink} 
+                onChange={(e) => setSettingsForm({...settingsForm, telegramLink: e.target.value})} 
+                placeholder="https://t.me/yourchannel"
+              />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+              <div className="form-group">
+                <label>Payme Merchant ID</label>
+                <input 
+                  type="text" 
+                  value={settingsForm.paymeMerchantId} 
+                  onChange={(e) => setSettingsForm({...settingsForm, paymeMerchantId: e.target.value})} 
+                  placeholder="66184a5..."
+                />
+              </div>
+              <div className="form-group">
+                <label>Click Service ID</label>
+                <input 
+                  type="text" 
+                  value={settingsForm.clickServiceId} 
+                  onChange={(e) => setSettingsForm({...settingsForm, clickServiceId: e.target.value})} 
+                  placeholder="32840"
+                />
+              </div>
+              <div className="form-group">
+                <label>Click Merchant ID</label>
+                <input 
+                  type="text" 
+                  value={settingsForm.clickMerchantId} 
+                  onChange={(e) => setSettingsForm({...settingsForm, clickMerchantId: e.target.value})} 
+                  placeholder="24560"
+                />
+              </div>
+            </div>
+            <button type="submit" className="btn btn-primary">Saqlash</button>
           </form>
         </section>
 
